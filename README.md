@@ -1,5 +1,5 @@
 # Catnip-Games-Incident-Response-Team
-Cyber Operations
+Cybersecurity Operations
 
 ## Context
 We are members of the Security Operations team at Catnip Games International, tasked with protecting their growing gaming infrastructure as they prepare for their first major multiplayer game launch. With over 300 Linux servers across two data centers handling sensitive player data, matchmaking services, and game hosting, the company has faced several security challenges during beta testing. Recent incidents included undetected bot attacks attempting to exploit game mechanics, delayed responses to potential account compromises, and poor coordination between development and security teams when investigating suspicious activities. A recent incident where player account data was nearly exposed due to an advanced social engineering attempt highlighted the lack of standardised incident response procedures and insufficient threat intelligence sharing between teams.
@@ -16,16 +16,16 @@ Incident handling and triage, Process documentation, Alert correlation analysis,
 
 # BEHAVIOR
 ## Knowledge:
-[61] Incident response and handling methodologies
-[966] Enterprise incident response program roles/responsibilities
-[66] Intrusion detection methodologies for host/network-based intrusions
-[967] Current and emerging threats/threat vectors
+- [61] Incident response and handling methodologies
+- [966] Enterprise incident response program roles/responsibilities
+- [66] Intrusion detection methodologies for host/network-based intrusions
+- [967] Current and emerging threats/threat vectors
  
 ## Abilities:
-[6918] Apply cybersecurity strategy to cloud computing models and architectures
+- [6918] Apply cybersecurity strategy to cloud computing models and architectures
  
 ## Tasks:
-[705] Manage security monitoring for situational awareness
-[824] Recognise and report security violations
-[852] Supervise protective/corrective measures for incidents
-[707] Manage threat analysis and threat information production
+- [705] Manage security monitoring for situational awareness
+- [824] Recognise and report security violations
+- [852] Supervise protective/corrective measures for incidents
+- [707] Manage threat analysis and threat information production
