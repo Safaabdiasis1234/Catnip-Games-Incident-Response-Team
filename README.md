@@ -2,7 +2,7 @@
 Cybersecurity Operations
 
 ## Context
-We are members of the Security Operations team at Catnip Games International, tasked with protecting their growing gaming infrastructure as they prepare for their first major multiplayer game launch. With over 300 Linux servers across two data centers handling sensitive player data, matchmaking services, and game hosting, the company has faced several security challenges during beta testing. Recent incidents included undetected bot attacks attempting to exploit game mechanics, delayed responses to potential account compromises, and poor coordination between development and security teams when investigating suspicious activities. A recent incident where player account data was nearly exposed due to an advanced social engineering attempt highlighted the lack of standardised incident response procedures and insufficient threat intelligence sharing between teams.
+We are members of the Security Operations team at the fictional Catnip Games International, tasked with protecting their growing gaming infrastructure as they prepare for their first major multiplayer game launch. With over 300 Linux servers across two data centers handling sensitive player data, matchmaking services, and game hosting, the company has faced several security challenges during beta testing. Recent incidents included undetected bot attacks attempting to exploit game mechanics, delayed responses to potential account compromises, and poor coordination between development and security teams when investigating suspicious activities. A recent incident where player account data was nearly exposed due to an advanced social engineering attempt highlighted the lack of standardised incident response procedures and insufficient threat intelligence sharing between teams.
 
 # ACTOR
 ## Skills Prerequisites
@@ -29,3 +29,20 @@ Incident handling and triage, Process documentation, Alert correlation analysis,
 - [824] Recognise and report security violations
 - [852] Supervise protective/corrective measures for incidents
 - [707] Manage threat analysis and threat information production
+
+#LOGISTICS 
+## Prototype SOC Implementation
+- Deploy integrated incident management platform
+- Configure threat intelligence sharing
+- Implement automated response workflows
+- Establish incident tracking system
+- Create response playbooks
+- Set up reporting mechanisms
+
+## Technology Stack
+- TheHive for case management
+- MISP for threat intelligence
+- Cortex for automation
+- Elasticsearch for logging
+- Python for custom integrations
+- Git for version control
