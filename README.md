@@ -30,7 +30,7 @@ Incident handling and triage, Process documentation, Alert correlation analysis,
 - [852] Supervise protective/corrective measures for incidents
 - [707] Manage threat analysis and threat information production
 
-#LOGISTICS 
+# LOGISTICS 
 ## Prototype SOC Implementation
 - Deploy integrated incident management platform
 - Configure threat intelligence sharing
