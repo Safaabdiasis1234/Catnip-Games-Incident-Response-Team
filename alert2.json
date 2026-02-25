@@ -1,0 +1,8 @@
+{
+  "failed_logins": 0,
+  "successful_login": false,
+  "ip": "8.8.8.8",
+  "file_hash": null,
+  "traffic_multiplier": 15,
+  "phishing_flag": false
+}

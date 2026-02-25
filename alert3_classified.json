@@ -1,0 +1,15 @@
+{
+  "category": "Malware / Host Compromise",
+  "severity": "Critical",
+  "score": 85,
+  "confidence": 90,
+  "ip_reputation": "unknown",
+  "hash_verdict": "malicious",
+  "reasons": [
+    "hash_verdict == malicious"
+  ],
+  "tags": [
+    "malware",
+    "host-compromise"
+  ]
+}

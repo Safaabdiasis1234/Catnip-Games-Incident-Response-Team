@@ -1,0 +1,18 @@
+{
+  "category": "Credential Attack (SSH Brute Force / Bot Logins)",
+  "severity": "High",
+  "score": 75,
+  "confidence": 90,
+  "ip_reputation": "suspicious",
+  "hash_verdict": "unknown",
+  "reasons": [
+    "failed_logins >= 20 (got 60)",
+    "failed_logins >= 50 (got 60)",
+    "ip_reputation == suspicious (boost)"
+  ],
+  "tags": [
+    "credential-attack",
+    "bruteforce",
+    "ssh"
+  ]
+}
