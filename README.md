@@ -27,3 +27,5 @@ Incident handling and triage, Process documentation, Alert correlation analysis,
 - Safa: Case Generation, Writeback Engine (testing the framework with generated incidents and implementing an automated writeback for Cortex results)
 - Rhaishah: Task Injection, MITRE ATT&CK, MISP Integration (programming three scripts to automate case assignment, map techniques, and check against MISP database
 - Anay: SCRUM Master, GitHub, Documentation
+
+## Set Up : see Implementation_Configuration_Guide.md
