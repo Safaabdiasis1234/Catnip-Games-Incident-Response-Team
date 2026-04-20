@@ -1,17 +1,17 @@
 # Set Up 
-1. Download given OVA files (one containing The Hive & Cortex, one containing MISP)
-2. Log into the Ubunutu machines 
+1. Request a community license from TheHive
+2. Download the OVA file, log into machine 
 -> student, Student1
-3. In terminal:
+3. On host machine (Powershell):
 ```
-cd docker/prod1-thehive
-sudo docker compose up -d
+ssh analyst@192.168.56.200
 ```
-4. To navigate to The Hive, go to browser and search https://localhost:443
-5. Connect Cortex & MISP
--> Test server connection
--> Update the server URLs for Cortex and MISP under 'Connectors' in thehive
-6. When exiting, make sure to decompose the docker:
+*password: analyst
+
+Taken from docker-compose.yml:
 ```
-sudo docker compose down
+#   Run this after boot: sudo chmod 777 /tmp/cortex-jobs
+#   To restart manually: cd catnip-sco && sudo docker compose up -d
+#   To check status: sudo docker compose ps
+#   To view logs: sudo docker compose logs -f
 ```
