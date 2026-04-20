@@ -1,0 +1,444 @@
+
+# =============================================================================
+# Incident Response Competency Experience - SOC Platform
+# TheHive · Cortex · MISP · Elasticsearch · Cassandra · MinIO
+# Tested on: Ubuntu 22.04 Server (VM) with Docker Engine
+# Stack auto-starts on boot.
+#   Run this after boot: sudo chmod 777 /tmp/cortex-jobs
+#   To restart manually: cd catnip-sco && sudo docker compose up -d
+#   To check status: sudo docker compose ps
+#   To view logs: sudo docker compose logs -f
+#
+# For any questions, please contact: Badis
+# =============================================================================
+
+services:
+  # Search/index backend (shared by TheHive and Cortex)
+
+  elasticsearch:
+
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+    ports:
+
+      - "0.0.0.0:9200:9200"
+
+    environment:
+
+      - discovery.type=single-node
+
+      - xpack.security.enabled=false
+
+      - cluster.name=hive
+
+      - http.host=0.0.0.0
+
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+
+    volumes:
+
+      - elasticsearchdata:/usr/share/elasticsearch/data
+
+    networks:
+
+      - SOC_NET
+
+    healthcheck:
+
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health | grep -qv '\"status\":\"red\"'"]
+
+      interval: 15s
+
+      timeout: 10s
+
+      retries: 20
+
+      start_period: 60s
+
+
+  # Database backend for TheHive
+
+  cassandra:
+
+    image: cassandra:4
+
+    restart: unless-stopped
+
+    ports:
+
+      - "0.0.0.0:9042:9042"
+
+    environment:
+
+      - CASSANDRA_CLUSTER_NAME=TheHive
+
+    volumes:
+
+      - cassandradata:/var/lib/cassandra
+
+    networks:
+
+      - SOC_NET
+
+    healthcheck:
+
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster' || exit 1"]
+
+      interval: 30s
+
+      timeout: 10s
+
+      retries: 20
+
+      start_period: 60s
+
+
+  # Object storage for TheHive5 attachments
+
+  minio:
+
+    image: quay.io/minio/minio
+
+    restart: unless-stopped
+
+    command: ["minio", "server", "/data", "--console-address", ":9002"]
+
+    environment:
+
+      - MINIO_ROOT_USER=minioadmin
+
+      - MINIO_ROOT_PASSWORD=minioadmin
+
+    ports:
+
+      - "0.0.0.0:9002:9002"
+
+    volumes:
+
+      - miniodata:/data
+
+    networks:
+
+      - SOC_NET
+
+    healthcheck:
+
+      test: ["CMD-SHELL", "curl -sf http://localhost:9000/minio/health/live"]
+
+      interval: 15s
+
+      timeout: 5s
+
+      retries: 10
+
+      start_period: 30s
+
+
+  # Analyser and responder automation - http://<VM-IP>:9001
+
+  cortex.local:
+
+    image: thehiveproject/cortex:latest
+
+    restart: unless-stopped
+
+    depends_on:
+
+      elasticsearch:
+
+        condition: service_healthy
+
+    environment:
+
+      - job_directory=/tmp/cortex-jobs
+
+      - docker_job_directory=/tmp/cortex-jobs
+
+    volumes:
+
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      - /tmp/cortex-jobs:/tmp/cortex-jobs
+
+      - ./cortex/application.conf:/etc/cortex/application.conf:ro
+
+      - ./analyzers:/opt/cortex/analyzers/custom
+
+    ports:
+
+      - "0.0.0.0:9001:9001"
+
+    networks:
+
+      - SOC_NET
+
+    healthcheck:
+
+      test: ["CMD-SHELL", "curl -sf http://localhost:9001/index.html || exit 1"]
+
+      interval: 15s
+
+      timeout: 5s
+
+      retries: 20
+
+      start_period: 60s
+
+
+  # Case management — http://<VM-IP>:9000
+
+  thehive:
+
+    image: strangebee/thehive:5.2
+
+    restart: unless-stopped
+
+    depends_on:
+
+      cassandra:
+
+        condition: service_healthy
+
+      elasticsearch:
+
+        condition: service_healthy
+
+      minio:
+
+        condition: service_healthy
+
+      cortex.local:
+
+        condition: service_healthy
+
+    mem_limit: 1500m
+
+    ports:
+
+      - "0.0.0.0:9000:9000"
+
+    environment:
+
+      - JVM_OPTS="-Xms1024M -Xmx1024M"
+
+    command:
+
+      - --secret
+
+      - "lab123456789"    # <--- placeholder, needed only for multiple instances
+
+      - "--cql-hostnames"
+
+      - "cassandra"
+
+      - "--index-backend"
+
+      - "elasticsearch"
+
+      - "--es-hostnames"
+
+      - "elasticsearch"
+
+      - "--s3-endpoint"
+
+      - "http://minio:9000"
+
+      - "--s3-access-key"
+
+      - "minioadmin"
+
+      - "--s3-secret-key"
+
+      - "minioadmin"
+
+      - "--s3-use-path-access-style"
+
+    volumes:
+
+      - thehivedata:/etc/thehive/application.conf
+
+    networks:
+
+      - SOC_NET
+
+
+  # Database backend for MISP
+
+  misp_mysql:
+
+    image: mysql/mysql-server:5.7
+
+    restart: unless-stopped
+
+    volumes:
+
+      - mispsqldata:/var/lib/mysql
+
+    environment:
+
+      - MYSQL_DATABASE=mispdb
+
+      - MYSQL_USER=mispuser
+
+      - MYSQL_PASSWORD=misppass
+
+      - MYSQL_ROOT_PASSWORD=misppass
+
+    networks:
+
+      - SOC_NET
+
+    healthcheck:
+
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-umispuser", "-pmisppass"]
+
+      interval: 15s
+
+      timeout: 5s
+
+      retries: 20
+
+      start_period: 60s
+
+
+  # Job queue for MISP background workers
+
+  redis:
+
+    image: redis:latest
+
+    restart: unless-stopped
+
+    networks:
+
+      - SOC_NET
+
+    healthcheck:
+
+      test: ["CMD", "redis-cli", "ping"]
+
+      interval: 10s
+
+      timeout: 5s
+
+      retries: 10
+
+
+  # Threat intelligence platform — https://<VM-IP>
+
+  misp.local:
+
+    image: coolacid/misp-docker:core-latest
+
+    restart: unless-stopped
+
+    depends_on:
+
+      misp_mysql:
+
+        condition: service_healthy
+
+      redis:
+
+        condition: service_healthy
+
+    ports:
+
+      - "0.0.0.0:80:80"
+
+      - "0.0.0.0:443:443"
+
+    volumes:
+
+      - misp-config:/var/www/MISP/app/Config
+
+      - misp-logs:/var/www/MISP/app/tmp/logs
+
+      - misp-files:/var/www/MISP/app/files
+
+      - misp-ssl:/etc/nginx/certs
+
+    environment:
+
+      - MYSQL_HOST=misp_mysql
+
+      - MYSQL_DATABASE=mispdb
+
+      - MYSQL_USER=mispuser
+
+      - MYSQL_PASSWORD=misppass
+
+      - MISP_BASEURL=https://192.168.56.200  # <--- VM IP, change if you update you IP, or create .env file
+
+      - TIMEZONE=UTC   # <--- Leave UTC for better standarisation
+
+      - INIT=true
+
+      - CRON_USER_ID=1
+
+      - REDIS_FQDN=redis
+
+      #- HOSTNAME=https://127.0.0.1   <--- # HOSTNAME is deprecated, do not use, it overrides BASEURL with 127.0.0.1
+
+    networks:
+
+      - SOC_NET
+
+
+  # MISP enrichment modules
+
+  misp-modules:
+
+    image: coolacid/misp-docker:modules-latest
+
+    restart: unless-stopped
+
+    environment:
+
+      - "REDIS_BACKEND=redis"
+
+    depends_on:
+
+      redis:
+
+        condition: service_healthy
+
+      misp_mysql:
+
+        condition: service_healthy
+
+    networks:
+
+      - SOC_NET
+
+
+volumes:
+
+  miniodata:
+
+  cassandradata:
+
+  elasticsearchdata:
+
+  thehivedata:
+
+  mispsqldata:
+
+  misp-config:
+
+  misp-logs:
+
+  misp-files:
+
+  misp-ssl:
+
+
+networks:
+
+  SOC_NET:
+
+    driver: bridge
