@@ -109,16 +109,16 @@ This playbook defines a standardised framework for responding to cybersecurity i
 - Support communication and coordination
 
 ### Incident Response Phases
- -->  Prepartion
-|          |
-|          v
-|    Detection & Analysis
-|          |  ^
-|          v  |
-|   Containment, Eradication, Recovery
-|        |
-|        v
-|_ Post-Incident Activity          
+<br> -->  Prepartion
+<br>|          |
+<br>|          v
+<br>|    Detection & Analysis
+<br>|          |  ^
+<br>|          v  |
+<br>|   Containment, Eradication, Recovery
+<br>|        |
+<br>|        v
+<br>|_ Post-Incident Activity          
 
 ### Incident Response Workflow
 Detection --> Triage --> Enrichment --> Investigation --> Containment --> Eradication --> Recovery --> Review
