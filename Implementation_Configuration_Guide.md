@@ -16,4 +16,4 @@ Taken from docker-compose.yml:
 #   To view logs: sudo docker compose logs -f
 ```
 To navigate to TheHive: http:192.168.56.20:9000
-Login Credentials: analyst@catnip.local, password: analyst
+<br>Login Credentials: analyst@catnip.local, password: analyst
