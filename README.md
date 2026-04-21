@@ -21,6 +21,25 @@ Incident handling and triage, Process documentation, Alert correlation analysis,
 - Python for custom integrations
 - Git for version control
 
+## File Structure
+~/catnip-soc/: home directory
+- docker-compose.yml: Docker Compose configuration for TheHive 5, Cortex, MISP, Elasticsearch, Cassandra, MinIO, MySQL, and Redis
+- run_demo.sh: generate new incidents, inject tasks, and automate example categorisation
+- analyzers/
+- - GameThreat_1_0: GameThreat analyser container, which checks IPs, domains, and URLs against an internal Catnip Games threat blocklist
+**game_threat.py: analyser script
+- - CatnipVT_1_0: CatnipVT analyser container, which uses the VirusTotal v3 API and handles hashes, IPs, domains, and URLs
+**catnip_vt.py: analyser script
+- cortex/
+- - application.conf: Cortex configuration file (not provided)
+- - logs/
+- scripts/
+- - add_tasks.py: maps each of the six incident categories to an ordered investigation task list
+- - generate_cases.py: creates six Catnip Games security incidents
+- - misp_lookup.py: queries MISP’s /attributes/restSearch endpoint for every observable on every case
+- - tag_based_ttps.py: maps categories to MITRE ATT&CK technique IDs
+- - thehive_writeback.py: closes the automation loop by reading completed Cortex results and writing them back to TheHive cases automatically
+
 ## Roles
 - Baris: Infrastructure, Deployment, Analysers (configuring a Hive-Cortex-MISP environemnt, creating custom analysers in Cortex)
 - Sawsan: Playbook, Investigation Procedures (creating a complete incident response playbook for each scenario covered)
